@@ -2,6 +2,8 @@ import pandas as pd
 from statistics import mode
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Leer un archivo CSV
 C6H6GT_data = pd.read_csv("AirQualityUCI.csv", delimiter=';')
@@ -98,3 +100,18 @@ def coeficiente_variacion_datos():
 
 coeficiente_variacion = coeficiente_variacion_datos()
 print("C.V: ", coeficiente_variacion)
+
+
+# ----------- Diagrama de Cajas (Box Plot) Horizontal -----------
+# Convertir la serie de datos a una lista para trabajar con Seaborn
+float_datos_list = float_datos.tolist()
+
+# Crear el diagrama de cajas (box plot) horizontal usando Seaborn
+sns.boxplot(data=float_datos_list, orient='h')  # 'h' para horizontal
+
+# Añadir título y etiquetas
+plt.title("Diagrama de Cajas Horizontal de los Datos de C6H6(GT)")
+plt.xlabel("Concentración de C6H6(GT)")
+
+# Mostrar el gráfico
+plt.show()
