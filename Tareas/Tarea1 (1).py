@@ -3,7 +3,6 @@ from statistics import mode
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 # Leer  archivo CSV
 C6H6GT_data = pd.read_csv("AirQualityUCI.csv", delimiter=';')
@@ -21,7 +20,9 @@ float_datos = strDatos.astype(float).dropna()
 # obtiene los datos que son mayores a cero
 float_datos_filtrados = float_datos[float_datos > 0]
 
-n = len(float_datos_filtrados) # cantidad de datos de la columna correspondiente del archivo
+# cantidad de datos de la columna correspondiente del archivo
+n = len(float_datos_filtrados)
+
 
 #  Funcion para calcular promedio de datos
 def promedio_de_datos():
@@ -72,13 +73,13 @@ def cuartiles_de_datos(C6H6GT_data):
     # Libreria numpy para encontrar Q3
     Q3 = np.percentile(float_datos_filtrados, 75)
     IQR = Q3 - Q1  # Formula de rango intercuartilico
-    
-    return Q1,Q2,Q3,IQR
+    return Q1, Q2, Q3, IQR
+
 
 #  Funcion que calcula la varianza de los datos
 def varianza_datos():
     # Libreria Pandas para encontrar la varianza
-    s_2 = float_datos_filtrados.var() 
+    s_2 = float_datos_filtrados.var()
     return s_2
 
 
@@ -113,7 +114,8 @@ cuar1, cuar2, cuar3, rango_intercuartil = cuartiles_de_datos(C6H6GT_data)
 lim_inferior = cuar1 - 1.5 * rango_intercuartil
 lim_superior = cuar3 + 1.5 * rango_intercuartil
 
-# Identifica valores atípicos basados en los limites 
+
+# Identifica valores atípicos basados en los limites
 def encontrar_valores_atipicos():
     valores_atipicos = []
 
@@ -123,23 +125,25 @@ def encontrar_valores_atipicos():
 
     return valores_atipicos
 
+
 valor_atipico = encontrar_valores_atipicos()
 
-# Identifica valores que se encuentran dentro de los limites 
+
+# Identifica valores que se encuentran dentro de los limites
 def encontrar_datos_dentro_limites():
     valores_dentro_limites = []
     for i in float_datos_filtrados:
         if lim_inferior <= i <= lim_superior:
-             valores_dentro_limites.append(i)
-    
+            valores_dentro_limites.append(i)
     return valores_dentro_limites
+
 
 valores_dentro_lim = encontrar_datos_dentro_limites()
 
 min_dentro_lim = min(valores_dentro_lim)
 max_dentro_lim = max(valores_dentro_lim)
 
-fig, ax = plt.subplots() # crea el gráfico y los ejes
+fig, ax = plt.subplots()  # crea el gráfico y los ejes
 
 # Muestra el titulo y las etiquetas
 ax.set_title('Concentración real de benceno promediada por hora en microg/m^3')
