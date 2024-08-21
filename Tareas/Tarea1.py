@@ -1,9 +1,19 @@
+# Programa para Tarea 1: Estadistica Descriptiva
+# Analisis estadistico de datos de Concentración real de benceno promediada
+# por hora en microg/m^3 por sensor C6H6 (GT)
+
+# Librerias Utilizadas
+
+###################################################
 import pandas as pd
 from statistics import multimode, StatisticsError
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+###################################################
 
+
+# Funciones para analisis estadistico
 
 # Leer  archivo CSV
 C6H6GT_data = pd.read_csv("AirQualityUCI.csv", delimiter=';')
@@ -34,7 +44,7 @@ def promedio_de_datos():
 
 promedio = promedio_de_datos()
 
-print("Promedio: ", promedio)
+print("Promedio: ", promedio, "microg/m^3")
 
 
 # Funcion para calcular el rango de la muestra con minimo y maximo
@@ -42,7 +52,7 @@ def rango_de_datos(C6H6GT_data):
     minimo = min(float_datos_filtrados)
     maximo = max(float_datos_filtrados)
     rango_muestral = maximo-minimo  # Formula de rango
-    print("Rango: ", rango_muestral)
+    print("Rango: ", rango_muestral, "microg/m^3")
 
 
 rango_de_datos(C6H6GT_data)
@@ -54,21 +64,17 @@ def moda_de_datos(C6H6GT_data):
         print("No hay datos no negativos en la muestra.")
         return None
 
-    # Imprime los datos filtrados para ver qué valores se están procesando
-    print("Datos filtrados:", float_datos_filtrados)
-
     try:
         # Verifica si hay más de una moda usando multimode
         modas = multimode(float_datos_filtrados)
         if len(modas) == 1:
-            print("Moda: ", modas[0])
+            print("Moda: ", modas[0], "microg/m^3")
         else:
-            print("Múltiples modas: ", modas)
+            print("Múltiples modas: ", modas, "microg/m^3")
     except StatisticsError:
         print("No se puede encontrar una moda única o los datos están vacíos.")
 
 
-# Llama a la función
 moda_de_datos(C6H6GT_data)
 
 
@@ -76,7 +82,7 @@ moda_de_datos(C6H6GT_data)
 def mediana_de_datos(C6H6GT_data):
     # Libreria numpy para encontrar mediana
     mediana = np.median(float_datos_filtrados)
-    print("Mediana: ", mediana)
+    print("Mediana: ", mediana, "microg/m^3")
 
 
 # Función para calcular los cuartiles y el rango intercuartilico (RIC)
@@ -88,8 +94,12 @@ def cuartiles_de_datos(C6H6GT_data):
     Q2 = np.percentile(float_datos_filtrados, 50)
     # Libreria numpy para encontrar Q3
     Q3 = np.percentile(float_datos_filtrados, 75)
-    IQR = Q3 - Q1  # Formula de rango intercuartilico
-    return Q1, Q2, Q3, IQR
+    RIC = Q3 - Q1  # Formula de rango intercuartilico
+    print("Q1 :", Q1, "microg/m^3")
+    print("Q2 :", Q2, "microg/m^3")
+    print("Q3 :", Q3, "microg/m^3")
+    print("RIC :", RIC, "microg/m^3")
+    return Q1, Q2, Q3, RIC
 
 
 cuartiles_de_datos(C6H6GT_data)
@@ -126,7 +136,8 @@ coeficiente_variacion = coeficiente_variacion_datos()
 print("C.V: ", coeficiente_variacion)
 
 
-# Diagrama de Cajas
+# Diagrama de Cajas #
+
 cuar1, cuar2, cuar3, rango_intercuartil = cuartiles_de_datos(C6H6GT_data)
 
 
@@ -186,7 +197,7 @@ ax.add_patch(plt.Rectangle((cuar1, 0.75), rango_intercuartil, 0.5, fill=True, co
 ax.plot([cuar2, cuar2], [0.75, 1.25], color='deeppink', lw=1)
 
 
-# Dibjua los bigotes desde el cuartil 1
+# Dibuja los bigotes desde el cuartil 1
 # hasta el minimo y del cuartil 3 hasta el maximo
 ax.plot([min_dentro_lim, cuar1], [1, 1], color='black', lw=1)
 ax.plot([cuar3, max_dentro_lim], [1, 1], color='black', lw=1)
@@ -204,36 +215,40 @@ ax.scatter(valor_atipico, [1]*len(valor_atipico), color='deepskyblue')
 plt.show()
 
 
-# Histograma
+# Histograma #
 
 def numero_de_clases(n):
-    bins_sqrt = int(np.ceil(np.sqrt(n)))
+    clases = int(np.ceil(np.sqrt(n)))
 
-    return bins_sqrt
-
-
-# Calcular el número de bins usando diferentes reglas
-bins_sqrt = numero_de_clases(n)
+    return clases
 
 
-# Paso 1: Calcular el intervalo de los bins
+# Se calcula el número de clases usando diferentes reglas
+clases = numero_de_clases(n)
+
+
+# Se calcula el intervalo de las clases
 min_val = min(float_datos_filtrados)
 max_val = max(float_datos_filtrados)
-intervalo_bin = (max_val - min_val) / bins_sqrt
+intervalo_bin = (max_val - min_val) / clases
 
-# Paso 2: Crear los bordes de los bins
-bins = np.arange(min_val, max_val + intervalo_bin, intervalo_bin)
 
-# Paso 3: Calcular la frecuencia absoluta
-frecuencia_absoluta, _ = np.histogram(float_datos_filtrados, bins=bins)
+# Se crean los intervalos de las clases para histograma
+intervalos = np.arange(min_val, max_val + intervalo_bin, intervalo_bin)
 
-# Paso 4: Calcular la frecuencia relativa
+
+# Calculo de frecuencia absoluta
+frecuencia_absoluta, _ = np.histogram(float_datos_filtrados, bins=intervalos)
+
+
+# Calculo la frecuencia relativa
 frecuencia_relativa = frecuencia_absoluta / len(float_datos_filtrados)
 
-# Paso 5: Crear el histograma de frecuencia absoluta
+
+# Creacion del histograma de frecuencia absoluta respecto a los datos
 plt.figure(figsize=(10, 6))
-plt.hist(float_datos_filtrados, bins=bins, color='skyblue', edgecolor='black')
-plt.title('Histograma de Concentración de Benceno (C6H6) en microg/m^3')
-plt.xlabel('Concentración de Benceno (microg/m^3)')
+plt.hist(float_datos_filtrados, bins=intervalos, color='skyblue', edgecolor='black')
+plt.title('Concentración real de benceno promediada por hora en microg/m^3')
+plt.xlabel('microg/m^3')
 plt.ylabel('Frecuencia Absoluta')
 plt.show()
