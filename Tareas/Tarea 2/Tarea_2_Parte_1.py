@@ -1,6 +1,10 @@
 from collections import Counter
 import matplotlib.pyplot as plt
 import pandas as pd
+from scipy.stats import binom
+from scipy.stats import norm
+
+# Parte 1
 
 # Caso 1: Dados Ideales
 print(" Dados Ideales ")
@@ -60,3 +64,38 @@ plt.show()
 df_truco = pd.DataFrame(list(Sumas_posibles_Caso2.items()), columns=['Suma', 'Probabilidad'])
 print("\nFunción de Masa de Probabilidad de Dados de Truco")
 print(df_truco)
+
+
+# Parte 3
+
+# Extraer la probabilidad de obtener la suma 7
+Prob_7 = Probabilidad_caso1[7]
+print(f"\nProbabilidad de obtener un 7: {Prob_7:.4f}")
+
+# ----- Parámetros -----
+n = 1000  # Número de tiradas
+
+# Media y desviación estándar para la distribución normal
+mu = n * Prob_7
+sigma = (n * Prob_7 * (1 - Prob_7)) ** 0.5
+
+print(f"Media (µ): {mu}, Desviación Estándar (σ): {sigma}")
+
+# ----- Ajuste del rango a 150-180 éxitos -----
+k1, k2 = 150, 180  # Rango cercano a la media esperada
+
+# ----- Cálculo de la Probabilidad Binomial -----
+prob_binomial = binom.cdf(k2, n, Prob_7) - binom.cdf(k1 - 1, n, Prob_7)
+print(f"Probabilidad Binomial para 150 ≤ X ≤ 180: {prob_binomial:.10f}")
+
+# ----- Cálculo de la Probabilidad Normal -----
+x1, x2 = k1 - 0.5, k2 + 0.5  # Corrección de continuidad
+prob_normal = norm.cdf(x2, mu, sigma) - norm.cdf(x1, mu, sigma)
+print(f"Probabilidad Normal para 150 ≤ X ≤ 180: {prob_normal:.10f}")
+
+# ----- Cálculo del Error Relativo -----
+if prob_binomial != 0:
+    error = abs(prob_binomial - prob_normal) / prob_binomial * 100
+    print(f"Error Relativo entre Binomial y Normal: {error:.5f}%")
+else:
+    print("Error: La probabilidad binomial es cero, no se puede calcular el error.")
